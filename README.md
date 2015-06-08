@@ -22,10 +22,10 @@ The work was fragmented into smaller subtasks and they were divided between grou
 
 1.Off-line data processing and csv creation (thonstad)
 2.Visualization coding
-  * Spatial Information Window (thonstad)	
-  * Frequency Content Window (thonstad)
-  * Intensity Content Windows (barber)
-  *Linking between windows (barber)
+   * Spatial Information Window (thonstad)	
+   * Frequency Content Window (thonstad)
+   * Intensity Content Windows (barber)
+   *Linking between windows (barber)
 3. Github (barber)
 
 
