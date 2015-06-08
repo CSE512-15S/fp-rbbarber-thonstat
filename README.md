@@ -20,8 +20,8 @@ Access our visualization at http://cse512-15s.github.io/fp-rbbarber-thonstat/ or
 ## Work Breakdown
 The work was fragmented into smaller subtasks and they were divided between group members. Interactions within each element of the visualization were coded separately. The final tool was constructed from the separate elements and additional tiem was required to link the plots together. 
 
-1.Off-line data processing and csv creation (thonstad)
-2.Visualization coding
+1. Off-line data processing and csv creation (thonstad)
+2. Visualization coding
    * Spatial Information Window (thonstad)	
    * Frequency Content Window (thonstad)
    * Intensity Content Windows (barber)
