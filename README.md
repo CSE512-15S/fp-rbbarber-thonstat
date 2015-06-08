@@ -18,7 +18,7 @@ Acknowledgement: Access to this dataset was provided by Dr. Brian Polagye and Pa
 Access our visualization at http://cse512-15s.github.io/fp-rbbarber-thonstat/ or download this repository and run python -m SimpleHTTPServer 9000 and access this from http://localhost:9000/.
 
 ## Work Breakdown
-The work was fragmented into smaller subtasks and they were divided between group members. Interactions within each element of the visualization were coded separately. The final tool was constructed from the separate elements and additional tiem was required to link the plots together. 
+The work was divided into smaller subtasks and they were delegated to group members. Interactions within each element of the visualization were coded separately. The final tool was constructed from the separate elements and additional time was required to link the plots together. 
 
 1. Off-line data processing and csv creation (thonstad)
 2. Visualization coding
