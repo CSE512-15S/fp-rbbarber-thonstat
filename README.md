@@ -10,7 +10,7 @@ The visualization explores the way different frequency bands of the recorded sig
 
 ![Overview](visIm.png)
 
-[Poster](final/poster-rbbarber-thonstat.pdf
+[Poster](final/poster-rbbarber-thonstat.pdf)
 Final Paper
 
 Acknowledgement: Access to this dataset was provided by Dr. Brian Polagye and Paul Murphy, and their assistance is gratefully acknowledged.
