@@ -8,12 +8,26 @@ The visualization explores the way different frequency bands of the recorded sig
 * The cross-flow amplitudes along the hydrophone’s path can be selected by brushing.
 * Linking between the panels helps the user stay oriented across the multiple windows.
 
+![alt tag]()
+
 Poster, Final Paper
 
 Acknowledgement: Access to this dataset was provided by Dr. Brian Polagye and Paul Murphy, and their assistance is gratefully acknowledged.
 
 ## Running Instructions
+Access our visualization at http://cse512-15s.github.io/fp-rbbarber-thonstat/ or download this repository and run python -m SimpleHTTPServer 9000 and access this from http://localhost:9000/.
+
 ## Work Breakdown
+The work was fragmented into smaller subtasks and they were divided between group members. Interactions within each element of the visualization were coded separately. The final tool was constructed from the separate elements and additional tiem was required to link the plots together. 
+
+1.Off-line data processing and csv creation (thonstad)
+2.Visualization coding
+* Spatial Information Window (thonstad)	
+* Frequency Content Window (thonstad)
+* Intensity Content Windows (barber)
+*Linking between windows (barber)
+3. Github (barber)
+
 
 
 
