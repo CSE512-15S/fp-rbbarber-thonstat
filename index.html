@@ -227,7 +227,8 @@
 				.attr("font-size", 43)
 				.attr("font-weight", "bold")
 				.attr("font-family", "sans-serif")
-				.text("Power Spectral Density Estimates");
+				.text("Power Spectral Density Estimates")
+				.attr("pointer-events","none");
 
 			var brush = d3.svg.brush().x(x2).on("brushend", brushended);
 
@@ -249,7 +250,16 @@
 				.attr("width", w_in + margin.left + margin.right)
 				.attr("height", h_all + margin.top + margin.bottom)
 				.append("g")
-					.attr("transform","translate(" + margin.left + "," + margin.top + ")");	
+					.attr("transform","translate(" + margin.left + "," + margin.top + ")")
+					.on("click", function() { 
+						floats.forEach( function(name) {
+							d3.select("#" + name + "line2").style("stroke", colour[cond[name]]);
+							d3.select("#" + name + "line1").style("stroke", colour[cond[name]]);
+						})
+						d3.selectAll(".fline").style("stroke", colour[cond[name]]);
+						d3.selectAll(".x_circ").style("fill", colour[cond[name]]);
+						current_run = "";
+					});;	
 
 			var xScale_in = d3.scale.linear().range([0, w_in]).domain([-100,200]);
 			var yScale = d3.scale.linear().range([h_all, 0]).domain([-.001,0.161]);
@@ -303,7 +313,8 @@
 				.attr("font-size", 29)
 				.attr("font-weight", "bold")
 				.attr("font-family", "sans-serif")
-				.text("In-Flow Amplitude Attenuation");
+				.text("In-Flow Amplitude Attenuation")
+				.attr("pointer-events","none");
 
 			var init_in = svg_in.append("text")
 				.attr("x", xScale_in(-42))
@@ -311,12 +322,22 @@
 				.attr("fill", "gray")
 				.attr("font-size", 24)
 				.attr("font-family", "sans-serif")
-				.text("Select frequency to filter");
+				.text("Select frequency to filter")
+				.attr("pointer-events","none");
 
 // ---------------------- svg_cross --------------------------------------------------------
 			var svg_cross = d3.select("#cross_flow").append("svg")
 				.attr("width", w_cross + margin.left + margin.right)
 				.attr("height", h_all + margin.top + margin.bottom)
+				.on("click", function() { 
+					floats.forEach( function(name) {
+						d3.select("#" + name + "line2").style("stroke", colour[cond[name]]);
+						d3.select("#" + name + "line1").style("stroke", colour[cond[name]]);
+					})
+					d3.selectAll(".fline").style("stroke", colour[cond[name]]);
+					d3.selectAll(".x_circ").style("fill", colour[cond[name]]);
+					current_run = "";
+				})
 				.append("g")
 					.attr("transform","translate(" + margin.left + "," + margin.top + ")");	
 
@@ -372,7 +393,8 @@
 				.attr("font-size", 40)
 				.attr("font-weight", "bold")
 				.attr("font-family", "sans-serif")
-				.text("Cross-Flow");
+				.text("Cross-Flow")
+				.attr("pointer-events","none");
 
 			svg_cross.append("text")
 				.attr("x", xScale_cross(-39.5))
@@ -382,7 +404,8 @@
 				.attr("font-size", 27)
 				.attr("font-weight", "bold")
 				.attr("font-family", "sans-serif")
-				.text("Amplitude Attenuation");
+				.text("Amplitude Attenuation")
+				.attr("pointer-events","none");
 
 			var init_cross = svg_cross.append("text")
 				.attr("x", xScale_cross(-36))
@@ -390,7 +413,8 @@
 				.attr("fill", "gray")
 				.attr("font-size", 24)
 				.attr("font-family", "sans-serif")
-				.text("Select frequency to filter");
+				.text("Select frequency to filter")
+				.attr("pointer-events","none");
 
 // ---------------------- plot vars --------------------------------------------------------
 
@@ -435,7 +459,8 @@
 				.attr("y", 0)
 				.attr("height", h_all)
 				.attr("width", x_w)
-				.attr("fill", "gray");
+				.attr("fill", "gray")
+				.attr("pointer-events","none");
 			var x_down_line = svg_in.append("rect")
 				.attr("clip-path", "url(#chart-area_in)")
 				.attr("opacity", 0)
@@ -443,7 +468,8 @@
 				.attr("y", 0)
 				.attr("height", h_all)
 				.attr("width", x_w*2)
-				.attr("fill", "gray");
+				.attr("fill", "gray")
+				.attr("pointer-events","none");
 
 			var x_up_line1 = svg1.append("rect")
 				.attr("clip-path", "url(#chart-area1)")
@@ -497,7 +523,8 @@
 					.attr("font-size", 34.5)
 					.attr("font-weight", "bold")
 					.attr("font-family", "sans-serif")
-					.text("River Bathymetry");
+					.text("River Bathymetry")
+					.attr("pointer-events","none");
 
 				turb = [{x:-5.5, y:-2.5},{x:5.5, y:-2.5},{x:5.5, y:2.5},{x:-5.5, y:2.5},{x:-5.5, y:-2.5}];
 				var t_line = d3.svg.line()
@@ -507,7 +534,8 @@
 				svg1.append("path")
 					.datum(turb)
 					.attr("d", t_line)
-					.attr("fill", "#99ADFF");
+					.attr("fill", "#99ADFF")
+					.attr("pointer-events","none");
 
 				svg1.append("text")
 					.attr("x", x1(-4.5))
@@ -517,7 +545,8 @@
 					.attr("font-size", 8)
 					.attr("font-weight", "bold")
 					.attr("font-family", "sans-serif")
-					.text("TURBINE");
+					.text("TURBINE")
+					.attr("pointer-events","none");
 
 			    floats.forEach( function(name) {
 					d3.csv(name + "_pos.csv", function(error, data) {
@@ -594,7 +623,22 @@
 						.attr("stroke-dasharray",(cond[name]+1) + ",5")
 						.style("stroke",colour[cond[name]])
 						.attr("class", "line2")
-						.attr("d", line2);
+						.attr("d", line2)
+						.on("click", function() {
+							d3.selectAll(".line2").style("stroke","lightgray");
+							d3.selectAll(".line1").style("stroke","lightgray");
+							d3.selectAll(".fline").style("stroke","lightgray");
+							d3.selectAll(".x_circ").style("fill","lightgray");
+							d3.select("#" + name + "line1").style("stroke", colour[cond[name]]);
+							d3.select("#" + name + "line2").style("stroke", colour[cond[name]])
+								.moveToFront();
+							d3.select("#"+name+"line").style("stroke", colour[cond[name]])
+								.moveToFront();
+							d3.select("#up_circ"+name).style("fill", colour[cond[name]]);
+							d3.select("#down_circ"+name).style("fill", colour[cond[name]]);
+							current_run = name;
+							d3.event.stopPropagation();
+						});
 				});
 			});		
 
@@ -617,7 +661,7 @@
 							// var c = "lightgray";
 							// if (run == current_run) { c = colour[cond[run]]; };
 
-							var c = colour[cond[run]];
+							var c = colour[cond[run]]; 
 
 							path = svg_in.append("path")
 								.datum(out[run])
@@ -626,7 +670,22 @@
 								.attr("id", run+"line")
 								.attr("d", line_in)
 								.attr("stroke", c)
-								.attr("opacity", 0);
+								.attr("opacity", 0)
+								.on("click", function() {
+									d3.selectAll(".line2").style("stroke","lightgray");
+									d3.selectAll(".line1").style("stroke","lightgray");
+									d3.selectAll(".fline").style("stroke","lightgray");
+									d3.selectAll(".x_circ").style("fill","lightgray");
+									d3.select("#" + run + "line1").style("stroke", colour[cond[run]]);
+									d3.select("#" + run + "line2").style("stroke", colour[cond[run]])
+										.moveToFront();
+									d3.select("#"+run+"line").style("stroke", colour[cond[run]])
+										.moveToFront();
+									d3.select("#up_circ"+run).style("fill", colour[cond[run]]);
+									d3.select("#down_circ"+run).style("fill", colour[cond[run]]);
+									current_run = run;
+									d3.event.stopPropagation();
+								});
 
 							svg_cross.selectAll("circle"+run)
 								.data(out[run])
@@ -655,7 +714,22 @@
 								.attr("fill", c)
 								.attr("stroke", "gray")
 								.attr("stroke-width", 2)
-								.attr("opacity", 0);
+								.attr("opacity", 0)
+								.on("click", function() {
+									d3.selectAll(".line2").style("stroke","lightgray");
+									d3.selectAll(".line1").style("stroke","lightgray");
+									d3.selectAll(".fline").style("stroke","lightgray");
+									d3.selectAll(".x_circ").style("fill","lightgray");
+									d3.select("#" + run + "line1").style("stroke", colour[cond[run]]);
+									d3.select("#" + run + "line2").style("stroke", colour[cond[run]])
+										.moveToFront();
+									d3.select("#"+run+"line").style("stroke", colour[cond[run]])
+										.moveToFront();
+									d3.select("#up_circ"+run).style("fill", colour[cond[run]]);
+									d3.select("#down_circ"+run).style("fill", colour[cond[run]]);
+									current_run = run;
+									d3.event.stopPropagation();
+								});
 
 							svg_cross.append("circle")
 								.attr("id","up_circ"+run)
@@ -666,7 +740,22 @@
 								.attr("fill", c)
 								.attr("stroke", "gray")
 								.attr("stroke-width", 2)
-								.attr("opacity", 0);
+								.attr("opacity", 0)
+								.on("click", function() {
+									d3.selectAll(".line2").style("stroke","lightgray");
+									d3.selectAll(".line1").style("stroke","lightgray");
+									d3.selectAll(".fline").style("stroke","lightgray");
+									d3.selectAll(".x_circ").style("fill","lightgray");
+									d3.select("#" + run + "line1").style("stroke", colour[cond[run]]);
+									d3.select("#" + run + "line2").style("stroke", colour[cond[run]])
+										.moveToFront();
+									d3.select("#"+run+"line").style("stroke", colour[cond[run]])
+										.moveToFront();
+									d3.select("#up_circ"+run).style("fill", colour[cond[run]]);
+									d3.select("#down_circ"+run).style("fill", colour[cond[run]]);
+									current_run = run;
+									d3.event.stopPropagation();
+								});
 
 							if (jj == floats.length) {
 								d3.select("#"+current_run+"line").moveToFront();
@@ -686,7 +775,8 @@
 									.attr("stroke", "gray")
 									.attr("fill", "none")
 									.attr("stroke-width", 2)
-									.attr("opacity", 0);
+									.attr("opacity", 0)
+									.attr("pointer-events","none");
 
 								var up_line = svg_cross.append("path")
 									.datum(cp_up)
@@ -696,7 +786,8 @@
 									.attr("stroke", "gray")
 									.attr("fill", "none")
 									.attr("stroke-width", 1)
-									.attr("opacity", 0);
+									.attr("opacity", 0)
+									.attr("pointer-events","none");
 
 								d3.selectAll(".x_circ").moveToFront();
 
