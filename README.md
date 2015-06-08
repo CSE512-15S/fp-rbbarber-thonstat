@@ -25,8 +25,8 @@ The work was fragmented into smaller subtasks and they were divided between grou
    * Spatial Information Window (thonstad)	
    * Frequency Content Window (thonstad)
    * Intensity Content Windows (barber)
-   *Linking between windows (barber)
-3. Github (barber)
+3. Linking between windows (barber)
+4. Github (barber)
 
 
 
