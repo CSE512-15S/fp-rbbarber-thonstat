@@ -1,0 +1,850 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<title>Acoustic Characterization of a Hydrokinetic Turbine</title>
+		<script type="text/javascript" src="http://d3js.org/d3.v3.min.js"></script>
+		<style type="text/css">
+			body {
+				height: 900;
+				width: 900;
+			}
+			#map{
+				position: absolute;
+				top: 40px;
+				left: 50px;
+				background-color: white;
+			}
+			#chart{
+				position: absolute;
+				top: 40px;
+				left: 420px;
+				background-color: white;
+			}
+			#in_flow{
+				height: 300px;
+				width: 500px;
+				position: absolute;
+				top: 350px;
+				left: 780px;
+			}
+			#cross_flow{
+				height: 300px;
+				width: 370px;
+				position: absolute;
+				top: 350px;
+				left: 410px;
+			}
+			.axis {
+			 	font: 10px sans-serif;
+			}
+			.axis path,
+			.axis line {
+				fill: none;
+				stroke: black;
+				shape-rendering: crispEdges;
+			}
+
+			.tick line{
+				opacity: 0.2;
+			}
+
+			.tick text{
+				font-size: 10px;
+				font: sans-serif;
+			}
+			.fline {
+				fill: none;
+				stroke-width: 2px;
+			}
+			.line1 {
+				fill: none;
+				stroke: darkgray;
+				stroke-width: 5px;
+				stroke-linecap: round;
+			}
+			div.tooltip {
+				position: absolute;
+				text-align: left;
+				width: 300px;
+				height: 44px;
+				padding: 2px;
+				font: 10px sans-serif;
+				background: white;
+				color: black;
+				border: solid 1px black;
+				opacity: 0;
+			}
+			.line2 {
+				fill: none;
+				stroke: darkgray;
+				stroke-width: 3px;
+				stroke-linecap: round;
+			}
+			.unclick {
+				fill: gray;
+				opacity: 0;
+			}
+			.brush .extent {
+				stroke: #fff;
+				fill-opacity: .125;
+				shape-rendering: crispEdges;
+			}
+		</style>
+	</head>
+	<body>
+
+		<div id="map"> </div>
+		<div id="chart"> </div>
+		<div id="in_flow"></div>
+		<div id="cross_flow"></div>
+
+		<script type="text/javascript">
+
+			var floats = ["f4","f8","f17","f24","f26"];
+			var cond =   {"f4" : 0, "f8" : 4.9, "f17": 0, "f24": 50, "f26" :50};
+			var colour = {"0" : "#ee4035", "4.9" : "#FFD14C", "50": "#96C04F"};
+			var depth = {"-5.59" : "#192D7F", "-5.00" : "#334799", "-4.00" : "#4C60B2", "-3.00" : "#667ACC", "-2.00" : "#7F93E5", "-1.00" : "#99ADFF"}; 
+
+// ---------------------- svg1 --------------------------------------------------------
+			var margin1 = {top: 20, right: 20, bottom: 40, left: 40},
+				width1 = 350 - margin1.left - margin1.right,
+				height1 = 600 - margin1.top - margin1.bottom;
+
+			var x1 = d3.scale.linear().range([0, width1]).domain([-40,30]);
+			var y1 = d3.scale.linear().range([0,height1]).domain([-150,195]);
+
+			var xAxis1 = d3.svg.axis()
+				.scale(x1)
+				.orient("bottom")
+				.innerTickSize(-height1)
+				.outerTickSize(0)
+				.tickPadding(5);
+			var yAxis1 = d3.svg.axis()
+				.scale(y1)
+				.orient("left")
+				.innerTickSize(-width1)
+				.outerTickSize(0)
+				.tickPadding(5);
+
+			var svg1 = d3.select("#map").append("svg")
+				.attr("width", width1 + margin1.left + margin1.right)
+				.attr("height", height1 + margin1.top + margin1.bottom)
+				.append("g")
+					.attr("transform", "translate(" + margin1.left + "," + margin1.top + ")");
+
+			svg1.append("g")
+				.attr("class", "x axis")
+				.attr("transform", "translate(0," + height1 + ")")
+				.call(xAxis1)
+				.append("text")
+					.attr("class", "x axis_label")
+					.attr("y", margin1.top)
+					.attr("x", width1/2)
+					.attr("dy", ".71em")
+					.style("text-anchor", "middle")
+					.text("Local X Position (m)");
+
+			svg1.append("g")
+				.attr("class", "y axis")
+				.call(yAxis1)
+				.append("text")
+					.attr("class", "y axis_label")
+					.attr("transform", "rotate(-90)")
+					.attr("y", -margin1.left)
+					.attr("x", -height1/2)
+					.attr("dy", ".71em")
+					.style("text-anchor", "middle")
+					.text("Local Y Position (m)");
+
+			svg1.append("clipPath")
+					.attr("id", "chart-area1")
+				.append("rect")
+					.attr("width", width1)
+					.attr("height", height1);
+
+			tooltipdiv = d3.select("body")
+				.append("div")
+				.attr("class", "tooltip");
+
+// ---------------------- svg2 --------------------------------------------------------
+
+			var margin2 = {top: 20, right: 20, bottom: 40, left: 40},
+				width2 = 850 - margin2.left - margin2.right,
+				height2 = 320 - margin2.top - margin2.bottom;
+
+			var x2 = d3.scale.linear().range([0, width2]).domain([40,1000]);
+			var y2 = d3.scale.linear().range([height2,0]).domain([75,105]);
+
+			var xAxis2 = d3.svg.axis()
+				.scale(x2)
+				.orient("bottom")
+				.innerTickSize(-height2)
+				.outerTickSize(0)
+				.tickPadding(5);
+			var yAxis2 = d3.svg.axis()
+				.scale(y2)
+				.orient("left")
+				.innerTickSize(-width2)
+				.outerTickSize(0)
+				.tickPadding(5);
+
+			var svg2 = d3.select("#chart").append("svg")
+				.attr("width", width2 + margin2.left + margin2.right)
+				.attr("height", height2 + margin2.top + margin2.bottom)
+				.append("g")
+					.attr("transform", "translate(" + margin2.left + "," + margin2.top + ")");
+
+			svg2.append("g")
+				.attr("class", "x axis")
+				.attr("transform", "translate(0," + height2 + ")")
+				.call(xAxis2)
+				.append("text")
+					.attr("class", "x axis_label")
+					.attr("y", margin2.top)
+					.attr("x", width2/2)
+					.attr("dy", ".71em")
+					.style("text-anchor", "middle")
+					.text("Frequency (Hz)");
+
+			svg2.append("g")
+				.attr("class", "y axis")
+				.call(yAxis2)
+				.append("text")
+					.attr("class", "y axis_label")
+					.attr("transform", "rotate(-90)")
+					.attr("y", -margin2.left)
+					.attr("x", -height2/2)
+					.attr("dy", ".71em")
+					.style("text-anchor", "middle")
+					.text("L (dB re 1\u03BC Pa\u00B2 /Hz)");
+
+			svg2.append("text")
+				.attr("x", x2(153))
+				.attr("y", y2(100.5))
+				.attr("fill", "#7284B2")
+				.attr("opacity", 0.4)
+				.attr("font-size", 43)
+				.attr("font-weight", "bold")
+				.attr("font-family", "sans-serif")
+				.text("Power Spectral Density Estimates");
+
+			var brush = d3.svg.brush().x(x2).on("brushend", brushended);
+
+			var gBrush = svg2.append("g")
+				.attr("class", "x brush")
+				.call(brush)
+				.call(brush.event)
+				.selectAll("rect")
+					.attr("y", 0)
+					.attr("height", height2 );
+
+// ---------------------- svg_in --------------------------------------------------------
+			var margin = {top: 20, right: 30, bottom: 50, left: 50}
+			var h_all = 300 - margin.top - margin.bottom;
+			var w_in = 500 - margin.left - margin.right;
+			var w_cross = 370 - margin.left - margin.right;
+
+			var svg_in = d3.select("#in_flow").append("svg")
+				.attr("width", w_in + margin.left + margin.right)
+				.attr("height", h_all + margin.top + margin.bottom)
+				.append("g")
+					.attr("transform","translate(" + margin.left + "," + margin.top + ")");	
+
+			var xScale_in = d3.scale.linear().range([0, w_in]).domain([-100,200]);
+			var yScale = d3.scale.linear().range([h_all, 0]).domain([-.001,0.161]);
+			var xAxis_in = d3.svg.axis()
+					.scale(xScale_in)
+					.orient("bottom")
+					.innerTickSize(-h_all)
+					.outerTickSize(0)
+					.tickPadding(5);
+			var yAxis_in = d3.svg.axis()
+					.scale(yScale)
+					.orient("left")
+					.innerTickSize(-w_in)
+					.outerTickSize(0)
+					.tickPadding(5);
+
+			svg_in.append("g")
+				.attr("class","axis")
+				.attr("transform", "translate(0,"+h_all+")")
+				.call(xAxis_in)
+				.append("text")
+					.attr("y", margin.top)
+					.attr("x", w_in/2)
+					.attr("dy", ".71em")
+					.style("text-anchor", "middle")
+					.text("Local In-Flow Position (ft.)");
+
+			svg_in.append("g")
+				.attr("class","axis")
+				.attr("id", "yaxis_in")
+				.call(yAxis_in)
+				.append("text")
+					.attr("transform", "rotate(-90)")
+					.attr("y", -margin.left)
+					.attr("x", -h_all/2)
+					.attr("dy", ".71em")
+					.style("text-anchor", "middle")
+					.text("Average RMS Amplitude (\u03BCPa)");
+
+			svg_in.append("clipPath")
+				.attr("id", "chart-area_in")
+				.append("rect")
+					.attr("width", w_in)
+					.attr("height", h_all);
+
+			svg_in.append("text")
+				.attr("x", xScale_in(-99.5))
+				.attr("y", yScale(0.142))
+				.attr("fill", "#7284B2")
+				.attr("opacity", 0.4)
+				.attr("font-size", 29)
+				.attr("font-weight", "bold")
+				.attr("font-family", "sans-serif")
+				.text("In-Flow Amplitude Attenuation");
+
+			var init_in = svg_in.append("text")
+				.attr("x", xScale_in(-42))
+				.attr("y", yScale(0.081))
+				.attr("fill", "gray")
+				.attr("font-size", 24)
+				.attr("font-family", "sans-serif")
+				.text("Select frequency to filter");
+
+// ---------------------- svg_cross --------------------------------------------------------
+			var svg_cross = d3.select("#cross_flow").append("svg")
+				.attr("width", w_cross + margin.left + margin.right)
+				.attr("height", h_all + margin.top + margin.bottom)
+				.append("g")
+					.attr("transform","translate(" + margin.left + "," + margin.top + ")");	
+
+			var xScale_cross = d3.scale.linear().range([0, w_cross]).domain([-40,30]);
+			
+			var xAxis_cross = d3.svg.axis()
+				.scale(xScale_cross)
+				.orient("bottom")
+				.innerTickSize(-h_all)
+				.outerTickSize(0)
+				.tickPadding(5);
+			var yAxis_cross = d3.svg.axis()
+				.scale(yScale)
+				.orient("left")
+				.innerTickSize(-w_cross)
+				.outerTickSize(0)
+				.tickPadding(5);
+
+			svg_cross.append("g")
+				.attr("class","axis")
+				.attr("transform", "translate(0,"+h_all+")")
+				.call(xAxis_cross)
+				.append("text")
+					.attr("y", margin.top)
+					.attr("x", w_cross/2)
+					.attr("dy", ".71em")
+					.style("text-anchor", "middle")
+					.text("Local Cross-Flow Position (ft.)");
+
+			svg_cross.append("g")
+				.attr("class","axis")
+				.attr("id", "yaxis_cross")
+				.call(yAxis_cross)
+				.append("text")
+					.attr("transform", "rotate(-90)")
+					.attr("y", -margin.left)
+					.attr("x", -h_all/2)
+					.attr("dy", ".71em")
+					.style("text-anchor", "middle")
+					.text("Average RMS Amplitude (\u03BCPa)");
+
+			svg_cross.append("clipPath")
+				.attr("id", "chart-area_cross")
+				.append("rect")
+					.attr("width", w_cross)
+					.attr("height", h_all);
+
+			svg_cross.append("text")
+				.attr("x", xScale_cross(-31.5))
+				.attr("y", yScale(0.137))
+				.attr("fill", "#7284B2")
+				.attr("opacity", 0.4)
+				.attr("font-size", 40)
+				.attr("font-weight", "bold")
+				.attr("font-family", "sans-serif")
+				.text("Cross-Flow");
+
+			svg_cross.append("text")
+				.attr("x", xScale_cross(-39.5))
+				.attr("y", yScale(0.121))
+				.attr("fill", "#7284B2")
+				.attr("opacity", 0.4)
+				.attr("font-size", 27)
+				.attr("font-weight", "bold")
+				.attr("font-family", "sans-serif")
+				.text("Amplitude Attenuation");
+
+			var init_cross = svg_cross.append("text")
+				.attr("x", xScale_cross(-36))
+				.attr("y", yScale(0.081))
+				.attr("fill", "gray")
+				.attr("font-size", 24)
+				.attr("font-family", "sans-serif")
+				.text("Select frequency to filter");
+
+// ---------------------- plot vars --------------------------------------------------------
+
+			var line1 = d3.svg.line()
+				.x(function(d) { return x1(d.y); })
+				.y(function(d) { return y1(d.x); });
+
+			var line2 = d3.svg.line()
+				.x(function(d) { return x2(d.f); })
+				.y(function(d) { return y2(d.P); });
+
+			var line_in = d3.svg.line()
+				.x(function(d) { return xScale_in(d.x) })
+				.y(function(d) { return yScale(d.amp) });
+
+			var c_line = d3.svg.line()
+			.interpolate("cardinal")
+				.x(function(d) { return d.x; })
+				.y(function(d) { return d.y; })
+
+			var freqs = [];
+			var frange = [];
+			d3.csv("f_col.csv", function(data) {
+				for (ii=0; ii<data.length; ii++) { freqs[ii] = parseFloat(data[ii].f); };
+				//frange = freqs.slice(9,13);
+			});
+
+			var current_run = "";
+			var out = {};
+			var xvals = {};
+			var x_w = 3;
+			var current_path = {};
+			var x = 0;
+			var x_up = 0;
+			var cp_up = [];
+			var cp_down = [];
+
+			var x_up_line = svg_in.append("rect")
+				.attr("clip-path", "url(#chart-area_in)")
+				.attr("opacity", 0)
+				.attr("x", xScale_in(-x_w/2))
+				.attr("y", 0)
+				.attr("height", h_all)
+				.attr("width", x_w)
+				.attr("fill", "gray");
+			var x_down_line = svg_in.append("rect")
+				.attr("clip-path", "url(#chart-area_in)")
+				.attr("opacity", 0)
+				.attr("x", xScale_in(-x_w/2))
+				.attr("y", 0)
+				.attr("height", h_all)
+				.attr("width", x_w*2)
+				.attr("fill", "gray");
+
+			var x_up_line1 = svg1.append("rect")
+				.attr("clip-path", "url(#chart-area1)")
+				.attr("opacity", 0)
+				.attr("y", y1(-x_w/2))
+				.attr("x", 0)
+				.attr("height", x_w)
+				.attr("width", width1)
+				.attr("fill", "gray")
+				.attr("pointer-events", "none");
+			var x_down_line1 = svg1.append("rect")
+				.attr("clip-path", "url(#chart-area1)")
+				.attr("opacity", 0)
+				.attr("y", y1(-x_w/2))
+				.attr("x", 0)
+				.attr("height", x_w*2)
+				.attr("width", width1)
+				.attr("fill", "gray")
+				.attr("pointer-events", "none");
+
+// ---------------------- enter data: map --------------------------------------------------------
+
+			d3.json("contours.json", function(data) {
+
+				data.forEach(function(contour) {
+					var bath = contour.coordinates.map(function(d) {  return [x1(d[1]),y1(d[0])]; }) // SCALES ENTRIES
+				// PLOTS BATYHMETRY DATA
+				svg1.append("polygon")
+					.data([bath])
+					.attr("points",function(d) { return d.join(","); })
+					.attr("fill",depth[contour.value])
+					.attr("fill-opacity",1)
+					.attr("stroke","white")
+					.attr("stroke-width",0.5)
+					.on("click", function() { 
+						floats.forEach( function(name) {
+							d3.select("#" + name + "line2").style("stroke", colour[cond[name]]);
+							d3.select("#" + name + "line1").style("stroke", colour[cond[name]]);
+						})
+						d3.selectAll(".fline").style("stroke", colour[cond[name]]);
+						d3.selectAll(".x_circ").style("fill", colour[cond[name]]);
+						current_run = "";
+					});
+				});		
+
+				svg1.append("text")
+					.attr("x", x1(-39.5))
+					.attr("y", y1(-120))
+					.attr("fill", "whitesmoke")
+					.attr("opacity", 0.5)
+					.attr("font-size", 34.5)
+					.attr("font-weight", "bold")
+					.attr("font-family", "sans-serif")
+					.text("River Bathymetry");
+
+				turb = [{x:-5.5, y:-2.5},{x:5.5, y:-2.5},{x:5.5, y:2.5},{x:-5.5, y:2.5},{x:-5.5, y:-2.5}];
+				var t_line = d3.svg.line()
+					.x(function(d) { return x1(d.x); })
+					.y(function(d) { return y1(d.y); })
+
+				svg1.append("path")
+					.datum(turb)
+					.attr("d", t_line)
+					.attr("fill", "#99ADFF");
+
+				svg1.append("text")
+					.attr("x", x1(-4.5))
+					.attr("y", y1(2))
+					.attr("fill", "black")
+					.attr("opacity", 0.5)
+					.attr("font-size", 8)
+					.attr("font-weight", "bold")
+					.attr("font-family", "sans-serif")
+					.text("TURBINE");
+
+			    floats.forEach( function(name) {
+					d3.csv(name + "_pos.csv", function(error, data) {
+						if (error) {console.log(error); };
+						svg1.append("path")
+							.datum(data)
+							.attr("clip-path", "url(#chart-area1)")
+							.attr("class", "line1")
+							.attr("d", line1)
+							.style("stroke",colour[cond[name]])
+							.attr("id", name +"line1")
+							.attr("stroke-dasharray",(cond[name]+1) + ",10")
+							.on("click", function() {
+								d3.selectAll(".line2").style("stroke","lightgray");
+								d3.selectAll(".line1").style("stroke","lightgray");
+								d3.selectAll(".fline").style("stroke","lightgray");
+								d3.selectAll(".x_circ").style("fill","lightgray");
+								d3.select("#" + name + "line1").style("stroke", colour[cond[name]]);
+								d3.select("#" + name + "line2").style("stroke", colour[cond[name]])
+									.moveToFront();
+								d3.select("#"+name+"line").style("stroke", colour[cond[name]])
+									.moveToFront();
+								d3.select("#up_circ"+name).style("fill", colour[cond[name]]);
+								d3.select("#down_circ"+name).style("fill", colour[cond[name]]);
+								current_run = name;
+								d3.event.stopPropagation();
+							})
+							.on("mouseover", function() {
+								tooltipdiv.style("visibility", "visible").style("opacity", 1);
+							})
+							.on("mouseout", function() {
+								tooltipdiv.style("visibility", "hidden").style("opacity", 0);
+							})
+							.on("mousemove", function() {
+								tooltipdiv
+									.style("visibility", "visible")
+									.style("opacity", 1)
+									.style("top", d3.event.pageY + 10 + "px")
+									.style("left", d3.event.pageX + 10 +"px");
+							d3.csv(name + "_info.csv", function(error, data) {
+								if (error) { console.log(error); }
+								else {
+									var w = Math.max(data[0].date.length+5,data[0].start.length+5,data[0].turbine.length+8,data[0].comment.length+9)
+									tooltipdiv
+										.html("Date: " + data[0].date + "<br>Time: " + data[0].start + "<br>Turbine: " + data[0].turbine + "<br>Comment: " + data[0].comment)
+										.style("width",5*(w)+ 10 +"px");
+								};
+							})
+						})
+					});
+				});
+			});
+
+// ---------------------- enter data: freq --------------------------------------------------------
+
+			floats.forEach( function(name) {
+				d3.text(name + "_spec.csv", function(text) {
+					var data = d3.csv.parseRows(text).map(function(row) {
+						var d ={}; 
+						var Ppp = row.slice(1).map(Number);  // SLICES OFF FREQ VAL
+						d.P = Ppp.reduce(function(prev,curr) { return prev + curr; });  // SUMS ROW OF DATA
+						d.P = 10*Math.log10(d.P/(Ppp.length)/(1e-12));  // DIVIDES SUM BY NUMBER OF ENTRIES, CONVERTS TO dB
+						d.f = parseFloat(row[0]);  // RETRIVES FREQUECY VALUE
+						return d;
+					});
+
+					// SLICES OFF POSITION ROW
+					var data = data.slice(1);
+
+					// CREATES LINE  -- ID #f[4,8,...,26]line2
+					var spec = svg2.append("path")
+						.datum(data)
+						.attr("id", name +"line2")
+						.attr("stroke-dasharray",(cond[name]+1) + ",5")
+						.style("stroke",colour[cond[name]])
+						.attr("class", "line2")
+						.attr("d", line2);
+				});
+			});		
+
+// ---------------------- enter data: in and cross --------------------------------------------------------
+
+			d3.csv("f4_spec.csv", function(data) {
+				var jj = 0;	
+				floats.forEach( function(run) {
+					
+					d3.csv(run+"_spec.csv", function(data) {
+						d3.csv(run+"_pos.csv", function(pointdata) {
+
+							jj = jj + 1;
+							out[run] = get_output(frange, data, pointdata);
+							xvals[run] = [];
+							for (var kk=0; kk<out[run].length; kk++) { 
+								xvals[run][kk] = (parseFloat(out[run][kk].x)) 
+							};
+
+							// var c = "lightgray";
+							// if (run == current_run) { c = colour[cond[run]]; };
+
+							var c = colour[cond[run]];
+
+							path = svg_in.append("path")
+								.datum(out[run])
+								.attr("clip-path", "url(#chart-area_in)")
+								.attr("class", "fline")
+								.attr("id", run+"line")
+								.attr("d", line_in)
+								.attr("stroke", c)
+								.attr("opacity", 0);
+
+							svg_cross.selectAll("circle"+run)
+								.data(out[run])
+								.enter()
+								.append("circle")
+								.attr("clip-path", "url(#chart-area_cross)")
+								.attr("class", run+"circ")
+								.attr("cx", function(d) { return xScale_cross(d.y); })
+								.attr("cy", function(d) { return yScale(d.amp); })
+								.attr("r", 5)
+								.attr("fill", "lightgray")
+								.attr("opacity",0);
+
+
+							xpos = d3.bisect(xvals[run], 0);
+
+							cp_up.push({ x:xScale_cross(out[run][xpos].y), y:yScale(out[run][xpos].amp) });
+							cp_down.push({ x:xScale_cross(out[run][xpos].y), y:yScale(out[run][xpos].amp) });
+
+							svg_cross.append("circle")
+								.attr("id","down_circ"+run)
+								.attr("class", "x_circ")
+								.attr("cx", xScale_cross(out[run][xpos].y))
+								.attr("cy", yScale(out[run][xpos].amp))
+								.attr("r", 3)
+								.attr("fill", c)
+								.attr("stroke", "gray")
+								.attr("stroke-width", 2)
+								.attr("opacity", 0);
+
+							svg_cross.append("circle")
+								.attr("id","up_circ"+run)
+								.attr("class", "x_circ")
+								.attr("cx", xScale_cross(out[run][xpos].y))
+								.attr("cy", yScale(out[run][xpos].amp))
+								.attr("r", 3)
+								.attr("fill", c)
+								.attr("stroke", "gray")
+								.attr("stroke-width", 2)
+								.attr("opacity", 0);
+
+							if (jj == floats.length) {
+								d3.select("#"+current_run+"line").moveToFront();
+								x_down_line.moveToFront();
+								x_up_line.moveToFront();
+								x_down_line1.moveToFront();
+								x_up_line1.moveToFront();
+
+								cp_up.sort(function(a,b) {return (a.x > b.x) ? 1 : ((b.x > a.x) ? -1 : 0);} );
+								cp_down.sort(function(a,b) {return (a.x > b.x) ? 1 : ((b.x > a.x) ? -1 : 0);} );
+
+								var down_line = svg_cross.append("path")
+									.datum(cp_down)
+									.attr("id", "down_line")
+									.attr("clip-path", "url(#chart-area_cross)")
+									.attr("d", c_line)
+									.attr("stroke", "gray")
+									.attr("fill", "none")
+									.attr("stroke-width", 2)
+									.attr("opacity", 0);
+
+								var up_line = svg_cross.append("path")
+									.datum(cp_up)
+									.attr("id", "up_line")
+									.attr("clip-path", "url(#chart-area_cross)")
+									.attr("d", c_line)
+									.attr("stroke", "gray")
+									.attr("fill", "none")
+									.attr("stroke-width", 1)
+									.attr("opacity", 0);
+
+								d3.selectAll(".x_circ").moveToFront();
+
+								svg_in.append("rect")
+									.attr("class", "overlay")
+									.attr("width", w_in)
+									.attr("height", h_all)
+									.attr("fill","none")
+									.attr("pointer-events","all")
+									.on("mousemove", function() {		
+										x = d3.mouse(this)[0];
+										x_up = -Math.abs(xScale_in.invert(x));
+										x_up_line.transition()
+											.duration(0)
+											.attr("x", xScale_in(x_up)-x_w/2);
+										x_down_line.transition()
+											.duration(0)
+											.attr("x", xScale_in(-x_up)-x_w/2);
+										x_up_line1.transition()
+											.duration(0)
+											.attr("y", y1(x_up)-x_w/2);
+										x_down_line1.transition()
+											.duration(0)
+											.attr("y", y1(-x_up)-x_w/2);
+										update_circles(x, out);
+									});
+							};
+						});
+					});
+				});
+			});
+
+// ---------------------- functions --------------------------------------------------------
+
+			function update_circles(x, out) {
+				x_up = -Math.abs(xScale_in.invert(x));
+				var cp_up = [];
+				var cp_down = [];
+				floats.forEach( function(run) {
+					xpos_up = d3.bisect(xvals[run], x_up);
+					xpos_down = d3.bisect(xvals[run], -x_up);
+					cp_up.push({ x:xScale_cross(out[run][xpos_up].y), y:yScale(out[run][xpos_up].amp) });
+					cp_down.push({ x:xScale_cross(out[run][xpos_down].y), y:yScale(out[run][xpos_down].amp) });
+
+					d3.select("#up_circ"+run).transition()
+						.duration(0)
+						.attr("cx", xScale_cross(out[run][xpos_up].y))
+						.attr("cy", yScale(out[run][xpos_up].amp));
+					d3.select("#down_circ"+run).transition()
+						.duration(0)
+						.attr("cx", xScale_cross(out[run][xpos_down].y))
+						.attr("cy", yScale(out[run][xpos_down].amp));
+				});
+				cp_up.sort(function(a,b) {return (a.x > b.x) ? 1 : ((b.x > a.x) ? -1 : 0);} );
+				cp_down.sort(function(a,b) {return (a.x > b.x) ? 1 : ((b.x > a.x) ? -1 : 0);} );
+
+				d3.select("#down_line").datum(cp_down)
+					.transition()
+					.duration(0)
+					.attr("d", c_line)
+					.style("opacity", 1);
+				d3.select("#up_line").datum(cp_up)
+					.transition()
+					.duration(0)
+					.attr("d", c_line)
+					.style("opacity", 1);
+				d3.selectAll(".x_circ").moveToFront();
+			};
+
+			function get_output(frange, data, pointdata) {
+				var out_obj = {};
+				for (xx in pointdata) {
+					out_obj[pointdata[xx].x] = {}
+					out_obj[pointdata[xx].x].x = parseFloat(pointdata[xx].x);
+					out_obj[pointdata[xx].x].y = parseFloat(pointdata[xx].y);
+					out_obj[pointdata[xx].x].amp = 0;
+				};
+				for (var ff=0; ff<frange.length; ff++) {
+					for (var ii=0; ii<data.length; ii++) {
+						if (data[ii].f == frange[ff]) {
+							for (var xx in data[ii]) {
+								if (xx != "f") {
+									out_obj[xx].amp = out_obj[xx].amp + parseFloat(data[ii][xx.toString()])*Math.sqrt(2.)/(frange.length);
+								};
+							};
+						};
+					};
+				};
+				var out_array = [];
+					for (xx in out_obj) {
+						outx = out_obj[xx].x;
+						outy = out_obj[xx].y;
+						outamp = out_obj[xx].amp;
+						out_array.push({x:outx, y:outy, amp:outamp});
+					};
+					return out_array;
+			};
+
+			function brushended() {
+				if (!d3.event.sourceEvent) { return };
+				x_up_line.style("opacity", 0.6);
+				x_down_line.style("opacity", 0.6);
+				x_up_line1.style("opacity", 0.6);
+				x_down_line1.style("opacity", 0.6);
+				init_in.style("opacity", 0);
+				init_cross.style("opacity", 0);
+
+				var extent0 = brush.extent();
+				var frange = [];
+					for (i = 0; i < freqs.length; i++) { 
+						if (freqs[i] > extent0[0] && freqs[i] <extent0[1]) {
+							frange.push(freqs[i]);
+						};
+					};
+
+				// update in and cross plots
+				floats.forEach( function(run) {
+					d3.csv(run+"_spec.csv", function(data) {
+						d3.csv(run+"_pos.csv", function(pointdata) {
+							out[run] = get_output(frange, data, pointdata);
+
+							d3.select("#"+run+"line").datum(out[run])
+								.transition()
+								.duration(100)
+								.attr("d", line_in)
+								.attr("opacity", 1);
+							d3.selectAll("."+run+"circ")
+								.data(out[run])
+								.transition()
+								.duration(100)
+								.attr("cx", function(d) { return xScale_cross(d.y); })
+								.attr("cy", function(d) { return yScale(d.amp); })
+								.attr("opacity", 0.2);
+
+							update_circles(x, out);
+							d3.select("#down_circ"+run).attr("opacity", 1);
+							d3.select("#up_circ"+run).attr("opacity", 1);
+						});
+					});
+				});
+			};
+
+			d3.selection.prototype.moveToFront = function() {
+				return this.each(function(){
+					this.parentNode.appendChild(this);
+				});
+			};
+
+		</script>
+	</body>
+</html>
