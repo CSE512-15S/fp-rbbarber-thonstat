@@ -44,7 +44,13 @@
 				stroke: black;
 				shape-rendering: crispEdges;
 			}
-
+			.axis .minor line {
+				stroke: black;
+				stroke-width: 1px;
+			}
+			.axis .minor text {
+				display: none;
+			}
 			.tick line{
 				opacity: 0.2;
 			}
@@ -120,6 +126,7 @@
 				.innerTickSize(-height1)
 				.outerTickSize(0)
 				.tickPadding(5);
+
 			var yAxis1 = d3.svg.axis()
 				.scale(y1)
 				.orient("left")
@@ -181,19 +188,35 @@
 				.orient("bottom")
 				.innerTickSize(-height2)
 				.outerTickSize(0)
-				.tickPadding(5);
+				.tickPadding(10)
+				.ticks(10);
+
 			var yAxis2 = d3.svg.axis()
 				.scale(y2)
 				.orient("left")
 				.innerTickSize(-width2)
 				.outerTickSize(0)
-				.tickPadding(5);
+				.tickPadding(10)
+				.ticks(6);
 
 			var svg2 = d3.select("#chart").append("svg")
 				.attr("width", width2 + margin2.left + margin2.right)
 				.attr("height", height2 + margin2.top + margin2.bottom)
 				.append("g")
 					.attr("transform", "translate(" + margin2.left + "," + margin2.top + ")");
+
+			svg2.append("g")
+				.attr("class", "x axis")
+				.attr("transform", "translate(0," + height2 + ")")
+				.call(d3.svg.axis().scale(x2).ticks(100).tickSize(7))
+				.selectAll(".tick")
+					.classed("minor", true);
+
+			svg2.append("g")
+				.attr("class", "y axis")
+				.call(d3.svg.axis().scale(y2).orient("left").ticks(30).tickSize(7))
+				.selectAll(".tick")
+					.classed("minor", true);
 
 			svg2.append("g")
 				.attr("class", "x axis")
@@ -268,13 +291,29 @@
 					.orient("bottom")
 					.innerTickSize(-h_all)
 					.outerTickSize(0)
-					.tickPadding(5);
+					.tickPadding(10)
+					.ticks(7);
+
 			var yAxis_in = d3.svg.axis()
 					.scale(yScale)
 					.orient("left")
 					.innerTickSize(-w_in)
 					.outerTickSize(0)
-					.tickPadding(5);
+					.tickPadding(10)
+					.ticks(8);
+
+			svg_in.append("g")
+				.attr("class", "x axis")
+				.attr("transform", "translate(0," + h_all + ")")
+				.call(d3.svg.axis().scale(xScale_in).ticks(100).tickSize(7))
+				.selectAll(".tick")
+					.classed("minor", true);
+
+			svg_in.append("g")
+				.attr("class", "y axis")
+				.call(d3.svg.axis().scale(yScale).orient("left").ticks(20).tickSize(7))
+				.selectAll(".tick")
+					.classed("minor", true);
 
 			svg_in.append("g")
 				.attr("class","axis")
@@ -348,13 +387,29 @@
 				.orient("bottom")
 				.innerTickSize(-h_all)
 				.outerTickSize(0)
-				.tickPadding(5);
+				.tickPadding(10)
+				.ticks(8);
+
 			var yAxis_cross = d3.svg.axis()
 				.scale(yScale)
 				.orient("left")
 				.innerTickSize(-w_cross)
 				.outerTickSize(0)
-				.tickPadding(5);
+				.tickPadding(10)
+				.ticks(8);
+
+			svg_cross.append("g")
+				.attr("class", "x axis")
+				.attr("transform", "translate(0," + h_all + ")")
+				.call(d3.svg.axis().scale(xScale_cross).ticks(50).tickSize(7))
+				.selectAll(".tick")
+					.classed("minor", true);
+
+			svg_cross.append("g")
+				.attr("class", "y axis")
+				.call(d3.svg.axis().scale(yScale).orient("left").ticks(20).tickSize(7))
+				.selectAll(".tick")
+					.classed("minor", true);
 
 			svg_cross.append("g")
 				.attr("class","axis")
