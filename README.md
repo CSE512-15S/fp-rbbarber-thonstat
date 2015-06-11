@@ -10,9 +10,10 @@ The visualization explores the way different frequency bands of the recorded sig
 * The cross-flow amplitudes along the hydrophone’s path can be selected by brushing.
 * Linking between the panels helps the user stay oriented across the multiple windows.
 
-![Overview](summart.png)
+![Overview](summary.png)
 
 [Poster](final/poster-rbbarber-thonstat.pdf)
+
 [Final Paper](final/paper-rbbarber-thonstat.pdf)
 
 ##Acknowledgement
